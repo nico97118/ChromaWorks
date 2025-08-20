@@ -16,6 +16,7 @@ Mod Support:
 	TT-NeverUnload (certainly outdated)
 	ScanSat
 	I.D. Skillfull Weapons & Damage (probably outdated)
+	Automatic Lab Housekeeper
 
 Chips:
 
@@ -45,6 +46,9 @@ By micha030201:
 	Basic SAS
 	Science processing computer - uncrewed lab
 	Stock antenna
+By Nok:
+	Lab chip
+	AI Scientists chip
 
 Required mods:
 
@@ -53,7 +57,8 @@ Required mods:
 
 License: CC-BY-NC-SA. Included in download.
 
-Updated by micha030201.
+Forked from LinuxGuruGamer
+Updated By Nok
 
 Credit to bac9 for Core textures.
 

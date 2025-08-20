@@ -1,12 +1,12 @@
 {
   "NAME": "ChromaWorks",
-  "URL": "https://raw.githubusercontent.com/linuxgurugamer/ChromaWorks/refs/heads/main/ChromaWorks.version",
-  "DOWNLOAD": "https://github.com/linuxgurugamer/ChromaWorks/releases",
+  "URL": "https://raw.githubusercontent.com/nico97118/ChromaWorks/refs/heads/main/ChromaWorks.version",
+  "DOWNLOAD": "https://github.com/nico97118/ChromaWorks",
   "VERSION": {
     "MAJOR": 2,
-    "MINOR": 0,
-    "PATCH": 1,
-    "BUILD": 2
+    "MINOR": 1,
+    "PATCH": 0,
+    "BUILD": 1
   },
   "KSP_VERSION": {
     "MAJOR": 1,

@@ -36,7 +36,13 @@
 	Added README-WEB.md with copy of web page
 	Fixed syntax error in part compChip_B9_info, countDownDuration was 30f when it should be just 30
 	Removed extra bulkheadProfiles line from compCore part
+
 2.0.1.3
 	Add missing icons
 	Fix KER chip
 	Fix B9 chip
+
+2.1.0.0
+	Implement a plugin make the lab chip usable
+	Adding a new AI Scientist chip which allow to adds virtual scientist to uncreweb ship, using EC
+
