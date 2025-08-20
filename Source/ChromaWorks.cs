@@ -1,69 +1,101 @@
-﻿/*
- * SimplePartlessPlugin.cs
- * 
- * Part of the KSP modding examples from Thunder Aerospace Corporation.
- * 
- * (C) Copyright 2013, Taranis Elsu
- * 
- * Kerbal Space Program is Copyright (C) 2013 Squad. See http://kerbalspaceprogram.com/. This
- * project is in no way associated with nor endorsed by Squad.
- * 
- * This code is licensed under the Apache License Version 2.0. See the LICENSE.txt and NOTICE.txt
- * files for more information.
- * 
- * Note that Thunder Aerospace Corporation is a ficticious entity created for entertainment
- * purposes. It is in no way meant to represent a real entity. Any similarity to a real entity
- * is purely coincidental.
- */
+﻿// ChromaWorks.cs
+// ChromaWorks Plugin for Kerbal Space Program
+// This plugin extends ModuleScienceConverter to utilize AI scientists for science conversion.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Tac
+namespace ChromaWorks
 {
-    /*
-     * This project is meant to be a "Hello World" example showing how to make a part-less plugin.
-     * 
-     * The main class for your plug-in should implement MonoBehavior, which is a Unity class.
-     * http://docs.unity3d.com/Documentation/ScriptReference/MonoBehaviour.html
-     * 
-     * KSPAddon is an "attribute" that lets KSP know that this class is a plug-in. KSP will create
-     * an instance of the class whenever the game loads the specified scene. The second parameter
-     * tells KSP whether to create an instance once, or every time it loads the scene.
-     * 
-     * Do not use true for the second parameter until this bug gets fixed:
-     * http://forum.kerbalspaceprogram.com/threads/45107-KSPAddon-bug-causes-mod-incompatibilities
-     * That link has a workaround, but prefer to use false unless your needs dictate otherwise.
-     * 
-     * The lifecycle for KSP comes from Unity with a few differences:
-     *    
-     *    Constructor -> Awake() -> Start() -> Update/FixedUpdate() [repeats] -> OnDestroy()
-     * 
-     * When the specified game scene loads, first KSP will construct your MonoBehaviour class and
-     * call Awake(). When it finishes doing that for all the mods, then it calls Start(). After
-     * that, it will call Update() every frame and FixedUpdate() every physics time step. Just
-     * before exiting the scene, the game will call OnDestroy() which gives you the opportunity to
-     * save any settings.
-     * 
-     * Unity uses Serialization a lot, so use the Awake() method to initialize your fields rather
-     * than the constructor. And you can use OnDestroy() to do some of the things you would do in
-     * a destructor.
-     * 
-     * Also see http://www.richardfine.co.uk/2012/10/unity3d-monobehaviour-lifecycle/ for more
-     * information about the Unity lifecycle.
-     * 
-     * This plugin does not actually do anything beyond logging to the Debug console, which you
-     * can access by pressing Alt+F2 or Alt+F12 (on Windows, for OSX use Opt and for Linux use
-     * Right Shift). You can also look at the debug file, which you can find at
-     * {KSP}/KSP_Data/output_log.txt.
-     */
+
+
     public class CW_ModuleScienceConverter : ModuleScienceConverter
     {
-        protected override float GetScientists ()
+    // Returns the sum of all ACTIVE AI scientist levels connected to the same parent part as this converter
+        protected override float GetScientists()
         {
-            return 2.5f;
+            float totalLevel = 0f;
+
+            if (this.part != null && this.part.vessel != null)
+            {
+                Part CW_core = this.part.parent;
+                var chips = this.part.vessel.Parts.Where(p => p.parent == CW_core);
+
+                foreach (Part p in chips)
+                {
+                    foreach (PartModule m in p.Modules)
+                    {
+                        if (m is CW_AIScientists AIScientist && AIScientist.isActive)
+                        {
+                            totalLevel += AIScientist.level;
+                        }
+                    }
+                }
+            }
+            return totalLevel;
+        }
+    }
+
+    
+    public class CW_AIScientists : PartModule
+    {
+        [KSPField(isPersistant = true)]
+        public float level = 1f;
+
+        [KSPField(isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "AI Active")]
+        public bool isActive = true;
+
+        [KSPField(isPersistant = true, guiActiveEditor = true, guiActive = true, guiName = "EC/s")]
+        public float ecConsumption = 0.5f;
+
+        [KSPEvent(guiActive = true, guiName = "Enable AI", active = true)]
+        public void ToggleAI()
+        {
+            isActive = !isActive;
+            UpdateEvents();
+        }
+
+        public override void OnStart(StartState state)
+        {
+            base.OnStart(state);
+            UpdateEvents();
+        }
+
+        // Updates the button label and state in the UI
+        private void UpdateEvents()
+        {
+            if (Events == null || !Events.Contains("ToggleAI"))
+                return;
+
+            Events["ToggleAI"].guiName = isActive ? "Disable AI" : "Enable AI";
+        }
+
+        public override void OnFixedUpdate()
+        {
+            base.OnFixedUpdate();
+            if (isActive && HighLogic.LoadedSceneIsFlight)
+            {
+                double ecNeeded = ecConsumption * TimeWarp.fixedDeltaTime;
+                double ecDrawn = part.RequestResource("ElectricCharge", ecNeeded);
+                if (ecDrawn < ecNeeded)
+                {
+                    isActive = false;
+                    UpdateEvents();
+                    ScreenMessages.PostScreenMessage("AI disabled: not enough ElectricCharge", 3f, ScreenMessageStyle.UPPER_CENTER);
+                }
+            }
+        }
+
+        public override string GetInfo()
+        {
+            string status = isActive ? "Active" : "Inactive";
+            return $"AI Scientist\n" +
+                   $"- Level: {level}\n" +
+                   $"- Status: {status}\n" +
+                   $"- EC Consumption: {ecConsumption} EC/s";
         }
     }
 }
