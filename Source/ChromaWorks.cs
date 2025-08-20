@@ -39,7 +39,7 @@ namespace ChromaWorks
         }
     }
 
-    
+
     public class CW_AIScientists : PartModule
     {
         [KSPField(isPersistant = true)]
@@ -48,20 +48,30 @@ namespace ChromaWorks
         [KSPField(isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "AI Active")]
         public bool isActive = true;
 
-        [KSPField(isPersistant = true, guiActiveEditor = true, guiActive = true, guiName = "EC/s")]
-        public float ecConsumption = 0.5f;
+        // Configured base EC/s, visible in editor only, user-configurable
+        [KSPField(isPersistant = true, guiActiveEditor = false, guiActive = false, guiName = "EC/s Base Rate")]
+        public float ecBase = 0.5f;
 
-        [KSPEvent(guiActive = true, guiName = "Enable AI", active = true)]
+        // Dynamic EC/s, visible in flight and editor for DBS, not user-configurable
+        [KSPField(isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "EC/s Usage")]
+        public float ecConsumption = 0f;
+
+        [KSPEvent(guiActive = true, guiActiveEditor = true, guiName = "Enable AI", active = true)]
         public void ToggleAI()
         {
             isActive = !isActive;
             UpdateEvents();
+            UpdateEcConsumption();
+
+            if (HighLogic.LoadedSceneIsEditor)
+                ScreenMessages.PostScreenMessage(isActive ? "AI Activated" : "AI Deactivated", 2f, ScreenMessageStyle.UPPER_CENTER);
         }
 
         public override void OnStart(StartState state)
         {
             base.OnStart(state);
             UpdateEvents();
+            UpdateEcConsumption();
         }
 
         // Updates the button label and state in the UI
@@ -71,6 +81,7 @@ namespace ChromaWorks
                 return;
 
             Events["ToggleAI"].guiName = isActive ? "Disable AI" : "Enable AI";
+            Events["ToggleAI"].active = true;
         }
 
         public override void OnFixedUpdate()
@@ -78,7 +89,7 @@ namespace ChromaWorks
             base.OnFixedUpdate();
             if (isActive && HighLogic.LoadedSceneIsFlight)
             {
-                double ecNeeded = ecConsumption * TimeWarp.fixedDeltaTime;
+                double ecNeeded = ecBase * TimeWarp.fixedDeltaTime;
                 double ecDrawn = part.RequestResource("ElectricCharge", ecNeeded);
                 if (ecDrawn < ecNeeded)
                 {
@@ -87,6 +98,7 @@ namespace ChromaWorks
                     ScreenMessages.PostScreenMessage("AI disabled: not enough ElectricCharge", 3f, ScreenMessageStyle.UPPER_CENTER);
                 }
             }
+            UpdateEcConsumption();
         }
 
         public override string GetInfo()
@@ -95,7 +107,11 @@ namespace ChromaWorks
             return $"AI Scientist\n" +
                    $"- Level: {level}\n" +
                    $"- Status: {status}\n" +
-                   $"- EC Consumption: {ecConsumption} EC/s";
+                   $"-  EC/s Usage: {ecBase}";
+        }
+        private void UpdateEcConsumption()
+        {
+            ecConsumption = isActive ? ecBase : 0f;
         }
     }
 }
