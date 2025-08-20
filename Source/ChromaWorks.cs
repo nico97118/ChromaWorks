@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using KSP.UI.Screens;
 
 namespace ChromaWorks
 {
@@ -112,6 +113,26 @@ namespace ChromaWorks
         private void UpdateEcConsumption()
         {
             ecConsumption = isActive ? ecBase : 0f;
+        }
+    }
+
+    [KSPAddon(KSPAddon.Startup.EditorAny, false)]
+    public class ChromaWorksCategory : MonoBehaviour
+    {
+        void Start()
+        {
+            var filter = PartCategorizer.Instance.filters.Find(f => f.button.categoryName == "Filter by Function");
+            if (filter != null)
+            {
+                PartCategorizer.AddCustomSubcategoryFilter(
+                    filter,
+                    "ChromaWorks",
+                    "ChromaWorks",
+                    PartCategorizer.Instance.iconLoader.GetIcon("ChromaWorksIcon"),
+                    p => p.partPrefab != null &&
+                         !string.IsNullOrEmpty(p.partPrefab.partInfo?.tags) &&
+                         p.partPrefab.partInfo.tags.Contains("chroma"));
+            }
         }
     }
 }
