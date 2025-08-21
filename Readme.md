@@ -17,6 +17,7 @@ Mod Support:
 	ScanSat
 	I.D. Skillfull Weapons & Damage (probably outdated)
 	Automatic Lab Housekeeper
+	DynamicBatteryStorage
 
 Chips:
 
@@ -46,9 +47,13 @@ By micha030201:
 	Basic SAS
 	Science processing computer - uncrewed lab
 	Stock antenna
+
 By Nok:
+
 	Lab chip
-	AI Scientists chip
+	AI Scientists chip (uncrewed scientst for Lab chip)
+	DynamicBatteryStorage support
+	KerbalEngineer module merged into a working chip
 
 Required mods:
 

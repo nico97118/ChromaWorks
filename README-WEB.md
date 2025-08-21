@@ -102,6 +102,10 @@ Basic SAS
 Science processing computer - uncrewed lab
 Stock antenna
 Dependencies
+By Nok:
+DynamicBatteryStorage support
+Lab chip
+AI Scientist chip
 
 FireSpitter plugin - for texture switchers
 ModuleManager - for mod configs
