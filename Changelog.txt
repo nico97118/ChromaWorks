@@ -42,7 +42,9 @@
 	Fix KER chip
 	Fix B9 chip
 
-2.1.0.0
+2.1.0.1
 	Implement a plugin make the lab chip usable
 	Adding a new AI Scientist chip which allow to adds virtual scientist to uncreweb ship, using EC
-
+	Add DynamicBatteryStorage support for Lab chip & AI scientist chip
+	Add custom VAB category for ChromaWorks parts
+	Add chips to the categories they fit best 
