@@ -15,7 +15,42 @@ namespace ChromaWorks
 
     public class CW_ModuleScienceConverter : ModuleScienceConverter
     {
-    // Returns the sum of all ACTIVE AI scientist levels connected to the same parent part as this converter
+        [KSPField(guiActive = true, guiActiveEditor = true, guiName = "AI Bonus")]
+        public string scientistBonusDisplay = "0";
+
+        public override void OnStart(StartState state)
+        {
+            base.OnStart(state);
+            UpdateScientistBonus();
+        }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            UpdateScientistBonus();
+        }
+
+
+        /// Updates the scientist bonus display in the GUI.
+        /// This method calculates the total bonus from all active AI scientists connected to the same parent part
+        /// and updates the scientistBonusDisplay field.
+        private void UpdateScientistBonus()
+        {
+            try
+            {
+                if (part == null || part.vessel == null) return;
+
+                float bonus = GetScientists();
+                scientistBonusDisplay = $"{bonus:F2}";
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[ChromaWorks] Error updating scientistBonusDisplay: {e}");
+                scientistBonusDisplay = "Error";
+            }
+        }
+
+        // Returns the sum of all ACTIVE AI scientist levels connected to the same parent part as this converter
         protected override float GetScientists()
         {
             float totalLevel = 0f;
@@ -36,7 +71,7 @@ namespace ChromaWorks
                     }
                 }
             }
-            return Mathf.Max(totalLevel,0.0f);
+            return Mathf.Max(totalLevel, 0.0f);
         }
     }
 
