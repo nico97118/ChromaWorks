@@ -48,3 +48,5 @@
 	Add DynamicBatteryStorage support for Lab chip & AI scientist chip
 	Add custom VAB category for ChromaWorks parts
 	Add chips to the categories they fit best 
+2.1.0.2
+	Fix science storage chip
